@@ -1,0 +1,193 @@
+ class OntoClass(RDF_Entity)
+ |  Python representation of a generic class within an ontology.
+ |  Includes methods for representing and querying RDFS/OWL classes
+ |  
+ |  
+ |  domain_of_inferred: a list of dict
+ |          [{<Class *http://xmlns.com/foaf/0.1/Person*>:
+ |          [<Property *http://xmlns.com/foaf/0.1/currentProject*>,<Property *http://xmlns.com/foaf/0.1/familyName*>,
+ |              etc....]},
+ |      {<Class *http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing*>:
+ |          [<Property *http://xmlns.com/foaf/0.1/based_near*>, etc...]},
+ |          ]
+ |  
+ |  Method resolution order:
+ |      OntoClass
+ |      RDF_Entity
+ |      __builtin__.object
+ |  
+ |  Methods defined here:
+ |  
+ |  __init__(self, uri, rdftype=None, namespaces=None, ext_model=False)
+ |      ...
+ |  
+ |  __repr__(self)
+ |  
+ |  all(self)
+ |  
+ |  count(self)
+ |  
+ |  describe(self)
+ |      shotcut to pull out useful info for interactive use
+ |  
+ |  instances(self)
+ |  
+ |  printGenericTree(self)
+ |  
+ |  printStats(self)
+ |      shotcut to pull out useful info for interactive use
+ |  ----------------------------------------------------------------------
+ |  Methods inherited from RDF_Entity:
+ |  
+ |  ancestors(self, cl=None, noduplicates=True)
+ |      returns all ancestors in the taxonomy
+ |  
+ |  bestDescription(self, prefLanguage='en', quotes=False)
+ |      facility for extracting a human readable description for an entity
+ |  
+ |  bestLabel(self, prefLanguage='en', qname_allowed=True, quotes=False)
+ |      facility for extrating the best available label for an entity
+ |      
+ |      ..This checks RFDS.label, SKOS.prefLabel and finally the qname local component
+ |  
+ |  children(self)
+ |      wrapper around property
+ |  
+ |  descendants(self, cl=None, noduplicates=True)
+ |      returns all descendants in the taxonomy
+ |  
+ |  getValuesForProperty(self, aPropURIRef)
+ |      generic way to extract some prop value eg
+ |          In [11]: c.getValuesForProperty(rdflib.RDF.type)
+ |          Out[11]:
+ |          [rdflib.term.URIRef(u'http://www.w3.org/2002/07/owl#Class'),
+ |           rdflib.term.URIRef(u'http://www.w3.org/2000/01/rdf-schema#Class')]
+ |  
+ |  parents(self)
+ |      wrapper around property
+ |  
+ |  printSerialize(self, format='turtle')
+ |  
+ |  printTriples(self)
+ |      display triples
+ |  
+ |  serialize(self, format='turtle')
+ |      xml, n3, turtle, nt, pretty-xml, trix are built in
+ |  
+ |  ----------------------------------------------------------------------
+ |  Data descriptors inherited from RDF_Entity:
+ |  
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |  
+ |  __weakref__
+ |      list of weak references to the object (if defined)
+
+
+['_RDF_Entity__buildQname', '__class__', '__delattr__', '__dict__', '__doc__', 
+'__format__', '__getattribute__', '__hash__', '__init__', '__module__', '__new__', 
+'__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', 
+'__subclasshook__', '__weakref__', '_buildGraph', '_children', '_ids', '_parents', 
+'all', 'ancestors', 'bestDescription', 'bestLabel', 'children', 'count', 'descendants', 
+'describe', 'domain_of', 'domain_of_inferred', 'ext_model', 'getValuesForProperty', 'id', 
+'instances', 'locale', 'namespaces', 'ontology', 'parents', 'printGenericTree', 
+'printSerialize', 'printStats', 'printTriples', 'qname', 'range_of', 'range_of_inferred',
+ 'rdfgraph', 'rdftype', 'rdftype_qname', 'serialize', 'shapes', 'slug', 'sparqlHelper', 
+ 'triples', 'uri']
+
+Help on Ontospy in module ontospy.core.ontospy object:
+
+class Ontospy(__builtin__.object)
+ |  Object that extracts schema definitions (aka 'ontologies') from an rdf graph.
+ |  
+ |  In [3]: import ontospy
+ |  
+ |  In [5]: o = ontospy.Ontospy()
+ |  
+ |  In [7]: o.load_rdf("foaf.rdf")
+ |  
+ |  In [11]: o.extract_entities()
+ |  
+ |  In [13]: o.stats()
+ |  Out[13]:
+ |  [('Ontologies', 1),
+ |   ('Triples', 630),
+ |   ('Classes', 15),
+ |   ('Properties', 67),
+ |   ('Annotation Properties', 7),
+ |   ('Object Properties', 34),
+ |   ('Datatype Properties', 26),
+ |   ('Skos Concepts', 0),
+ |   ('Data Sources', 1)]
+ |  
+ |  Methods defined here:
+ |  
+ |  __init__(self, uri_or_path=None, text=None, file_obj=None, rdf_format='', verbose=False, hide_base_schemas=True, sparql_endpoint=None, credentials=None, extract_entities=True)
+ |      Load the graph in memory, then setup all necessary attributes.
+ |  
+ |  __repr__(self)
+ |      Return some info for the ontospy instance.
+ |      
+ |      note: if it's a sparql backend, limit the info returned to avoid long queries (tip: a statement like `if self.rdfgraph` on a sparql endpoint is enough to cause a long query!)
+ |  
+ |  extract_classes(self, hide_base_schemas=True)
+ |      2015-06-04: removed sparql 1.1 queries
+ |      2015-05-25: optimized via sparql queries in order to remove BNodes
+ |      2015-05-09: new attempt
+ |      
+ |      Note: sparqlHelper.getAllClasses() returns a list of tuples,
+ |      (class, classRDFtype)
+ |      so in some cases there are duplicates if a class is both RDFS.CLass and OWL.Class
+ |      In this case we keep only OWL.Class as it is more informative.
+ |  
+ |  extract_entities(self, verbose=False, hide_base_schemas=True)
+:
+ |      In this case we keep only OWL.Class as it is more informative.
+ |  
+ |  extract_entities(self, verbose=False, hide_base_schemas=True)
+ |      Extract all ontology entities from an RDF graph and construct Python representations of them.
+ |  
+ |  extract_ontologies(self, exclude_BNodes=False, return_string=False)
+ |      Extract ontology instances info from the graph, then creates python objects for them.
+ |      
+ |      Note: often ontology info is nested in structures like this:
+ |      
+ |      [ a owl:Ontology ;
+ |          vann:preferredNamespacePrefix "bsym" ;
+ |          vann:preferredNamespaceUri "http://bsym.bloomberg.com/sym/" ]
+ |      
+ |      Hence there is some logic to deal with these edge cases.
+ |  
+ |  extract_properties(self)
+ |      2015-06-04: removed sparql 1.1 queries
+ |      2015-06-03: analogous to get classes
+ |      
+ |      # instantiate properties making sure duplicates are pruned
+ |      # but the most specific rdftype is kept
+ |      # eg OWL:ObjectProperty over RDF:property
+ |  
+ |  extract_shapes(self)
+ |      Extract SHACL data shapes from the rdf graph.
+ |      <http://www.w3.org/ns/shacl#>
+ |      
+ |      Instatiate the Shape Python objects and relate it to existing classes,
+ |      if available.
+ |  
+ |  extract_skos_concepts(self)
+ |      2015-08-19: first draft
+ |  
+ |  getClass(self, id=None, uri=None, match=None)
+ |      get the saved-class with given ID or via other methods...
+ |      
+ |      Note: it tries to guess what is being passed..
+ |      
+ |      In [1]: g.getClass(uri='http://www.w3.org/2000/01/rdf-schema#Resource')
+ |      Out[1]: <Class *http://www.w3.org/2000/01/rdf-schema#Resource*>
+ |      
+ |      In [2]: g.getClass(10)
+ |      Out[2]: <Class *http://purl.org/ontology/bibo/AcademicArticle*>
+ |      
+ |      In [3]: g.getClass(match="person")
+ |      Out[3]:
+ |      [<Class *http://purl.org/ontology/bibo/PersonalCommunicationDocument*>,
+:
