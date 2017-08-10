@@ -1,9 +1,9 @@
+# *--coding:utf-8--*
 import nltk
 from nltk.stem.lancaster import LancasterStemmer  
 from nltk.corpus import stopwords, brown
 
 from datetime import datetime
-
 
 class TextProcessor():
     '''
@@ -24,27 +24,26 @@ class TextProcessor():
             if tags:
                 frequent = nltk.FreqDist(tags)
                 #print frequent
-                max_value = frequent.max()
-                return (max_value, frequent[max_value])
+                return frequent.max()
             else:
-                return ("", 0)
+                return ""
+
         words_corrected_tag = []
-        brown_tagged = brown.tagged_words(categories='news')
+        brown_tagged = brown.tagged_words(categories=['reviews','editorial'])
+        stopwords_list = stopwords.words('english') 
         for word, word_pos in words_tagged:
             # if word_pos[:2] in ['JJ', 'NN', 'VB']:
-            if word_pos[:2] == 'NN':
-                (temp_word_pos, temp_word_frequent) = get_word_pos(word_set=brown_tagged, word=word)
-                if word_pos == temp_word_pos:
-                    words_corrected_tag.append((word, word_pos))
-                elif temp_word_frequent >= self.frequent_threshold:
+            if word not in stopwords_list and word_pos[0:2] not in ['VB','JJ','CD']:
+                temp_word_pos = get_word_pos(word_set=brown_tagged, word=word)                
+                if temp_word_pos:
                     words_corrected_tag.append((word, temp_word_pos))
                 else:
                     patterns = [
-                        (r'.*[ts]ion$', 'NN'),
+                        (r'.*[ts]ion$', 'NNP'),
                         (r'.*om[ae]$', 'NNP'),
-                        (r'.*[ts]is$', 'NNP'),
+                        (r'.*[tsl]is$', 'NNP'),
                         (r'.*[cd]er$', 'NNP'),
-                        (r'.*[mns]ia$', 'NNP'),
+                        (r'.*[mnpsxd]ia$', 'NNP'),
                         (r'.*[pt]hy$', 'NNP'),
                         (r'.*asm$', 'NNP'),
                         (r'.*mor$', 'NNP'),
@@ -54,10 +53,8 @@ class TextProcessor():
                     regexp_tagger = nltk.RegexpTagger(patterns)
                     temp_word, temp_word_pos = regexp_tagger.tag([word, ])[0]
                     words_corrected_tag.append((temp_word, temp_word_pos))
-                
             else:
                 words_corrected_tag.append((word, word_pos))
-        print words_corrected_tag
         return words_corrected_tag
 
     def get_keywords(self):
@@ -67,19 +64,12 @@ class TextProcessor():
         keywords = []
         words = nltk.word_tokenize(self.text)
         words_tagged = nltk.pos_tag(words)
-        #print words_tagged
+        print words_tagged
         words_tagged_corrected = self.__get_corrected_pos__(words_tagged=words_tagged)
-        #print words_tagged_corrected
+        print words_tagged_corrected
 
-        basic_grammar = r'''NP: {<DT|JJ|NN.*|IN>*<NN.*>+<CD>?}'''
+        basic_grammar = r'''NP: {<JJ|VBD|VBG|NN.*>*<NN.*>+<CD>?}'''
         regexp_parser = nltk.RegexpParser(basic_grammar)
-        result_tree = regexp_parser.parse(words_tagged_corrected)
-        for subtree in result_tree.subtrees():
-            if subtree.label() == 'NP':
-                keywords.append(" ".join([word for (word, pos) in subtree.leaves()]))
-
-        expanded_grammar = r'''NP: {<DT|JJ|NN.*|IN|CC>*<NN.*>+<CD>?}'''
-        regexp_parser = nltk.RegexpParser(expanded_grammar)
         result_tree = regexp_parser.parse(words_tagged_corrected)
         for subtree in result_tree.subtrees():
             if subtree.label() == 'NP':
@@ -88,8 +78,9 @@ class TextProcessor():
 
 
 if __name__ == "__main__":
-    text = "What made you want to look up hyperuricemia? Please tell us where you read or heard it (including the quote, if possible)."
+    text = "What made you want to look up Waardenburg syndrome type 2D? Please tell us where you read or heard it (including the quote, if possible)."
+    text2 = "Waardenburg syndrome is usually inherited in an autosomal dominant pattern, which means one copy of the altered gene is sufficient to cause the disorder. "
     start = datetime.now()
-    text_processor = TextProcessor(text = text)
+    text_processor = TextProcessor(text = text2)
     print text_processor.get_keywords()
     print "Total:", datetime.now()-start
