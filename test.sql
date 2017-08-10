@@ -1,8 +1,8 @@
+CREATE DATABASE IF NOT EXISTS owl DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
 use owl;
 
-
 DROP TABLE if exists disease_ontology;
-
 
 CREATE TABLE IF NOT EXISTS disease_ontology (
     id INT NOT NULL auto_increment primary key,

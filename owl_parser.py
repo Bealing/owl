@@ -1,11 +1,10 @@
 # parse OWL file and store entities and classes into MYSQL DB
+from datetime import datetime
+import traceback
 import rdflib, ontospy
 import MySQLdb
-import traceback
 
-from datetime import datetime
-
-OWL_FILE = "hdo.owl"
+OWL_FILE = "HumanDO.owl"
 # property's URI
 #ROOT_URI = "http://purl.obolibrary.org/obo/DOID_4"
 #ID_URI="http://www.geneontology.org/formats/oboInOwl#id"
@@ -42,6 +41,9 @@ VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
 '''
 
 class Owlparser():
+    '''
+    parse owl file.
+    '''
     def __init__(self, hdo=None):
         try:
             # record's number
@@ -55,7 +57,7 @@ class Owlparser():
             # create a new table
             db_cur.execute(CREATE_TABLE_SQL)
             db_cur.close()
-            self.db_conn.commit()    
+            self.db_conn.commit()
             # intialize OWL graph in memory
             self.hdo = hdo
             print "parser created!"
@@ -64,6 +66,7 @@ class Owlparser():
             traceback.print_exc()
             # close database's connection if an exception occurs
             self.db_conn.close()
+
     def __del__(self):
         try:
             self.db_conn.close()
@@ -73,7 +76,8 @@ class Owlparser():
     def insert_one_record(self, values=None):
         '''
         execute a sql to insert a record
-        values: variables tuple
+        ARGS:
+            values: variables tuple
         '''
         try:
             # update curser
@@ -95,7 +99,6 @@ class Owlparser():
         parse records and store every record to mysql db recursively
         '''
         try:
-            print "Processed:%s" % uri
             # Initially, get top level ontology classes as starting points
             if uri == "":
                 top_class_list = self.hdo.ontologyClassTree()[0]
@@ -132,6 +135,8 @@ class Owlparser():
             sql_values = (do_id, do_uri, do_name, do_definition, "",
                           do_synonyms, do_parents_uri, do_ancestors_uri, do_deprecated)
             self.insert_one_record(values=sql_values)
+            self.count += 1
+            print "Processed:%s" % uri
             # get the URIs of do's children and then parse them
             children = disease_ontology.children()
             for child in children:
