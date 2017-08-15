@@ -109,7 +109,7 @@ class TextProcessor():
         return list(set(keywords))
 
 if __name__ == "__main__":
-    text = "What made you want to look up Waardenburg syndrome type 2D? Please tell us where you read or heard it (including the quote, if possible)."
+    text = "What made you want to look up Waardenburg syndrome?"
     text2 = "Waardenburg syndrome is usually inherited in an autosomal dominant pattern, which means one copy of the altered gene is sufficient to cause the disorder. "
     start = datetime.now()
     text_processor = TextProcessor(text = text2)
