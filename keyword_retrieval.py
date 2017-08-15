@@ -21,7 +21,7 @@ SELECT_PARENTS_BY_URI = r'''
 select do_id, do_name, do_definition, do_deprecated from disease_ontology where do_uri = '%s'
 '''
 
-class KeywordRetrieval():
+class KeywordRetrieval(object):
     '''
     retrieve information related with keywords 
     '''

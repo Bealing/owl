@@ -5,7 +5,7 @@ import nltk
 from nltk.stem.lancaster import LancasterStemmer  
 from nltk.corpus import stopwords, brown
 
-class TextProcessor():
+class TextProcessor(object):
     '''
     process text inputed by user
     '''
