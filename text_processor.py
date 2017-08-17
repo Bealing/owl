@@ -112,6 +112,6 @@ if __name__ == "__main__":
     text = "What made you want to look up Waardenburg syndrome?"
     text2 = "Waardenburg syndrome is usually inherited in an autosomal dominant pattern, which means one copy of the altered gene is sufficient to cause the disorder. "
     start = datetime.now()
-    text_processor = TextProcessor(text = text2)
+    text_processor = TextProcessor(text = text)
     print text_processor.get_keywords()
     print "Total:", datetime.now()-start
